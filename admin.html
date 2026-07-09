@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEDドットキャンバス 管理画面</title>
+    <!-- Google Fonts: Rounded font for consistent theme, clean Sans for tables -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- ヘッダー -->
+    <header class="admin-header">
+        <div class="header-left">
+            <span class="header-logo">🐱</span>
+            <h1>LEDドットキャンバス 管理画面</h1>
+        </div>
+        <div class="header-right">
+            <span class="update-time-label">最終更新：<span id="txt-last-update">--:--:--</span></span>
+            <button id="btn-refresh" class="btn-refresh">
+                <span class="refresh-icon">🔄</span> 更新
+            </button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <div class="admin-container">
+
+        <!-- ダッシュボード（上部3つのカード） -->
+        <section class="dashboard-section">
+            
+            <!-- 1. システム状態 -->
+            <div class="dashboard-card system-status-card">
+                <h2>システム状態</h2>
+                <div class="status-indicator-row">
+                    <span id="esp-status-dot" class="status-dot offline"></span>
+                    <span id="esp-status-text" class="status-text">ESP32 未接続</span>
+                </div>
+                <div class="status-indicator-row">
+                    <span id="db-status-dot" class="status-dot offline"></span>
+                    <span id="db-status-text" class="status-text">Database 未接続</span>
+                </div>
+                <div class="ip-address-row">
+                    <span class="ip-label">ESP32最終確認：</span>
+                    <span id="esp-last-seen" class="ip-value">--</span>
+                </div>
+                <button id="btn-test-connection" class="btn-outline-blue">接続テスト</button>
+            </div>
+
+            <!-- 2. スライドショー設定 -->
+            <div class="dashboard-card slideshow-config-card">
+                <h2>スライドショー設定</h2>
+                <div class="config-controls-row">
+                    <button id="btn-slideshow-start" class="btn-slideshow-start">
+                        <span class="control-icon">▶</span> スライドショー開始
+                    </button>
+                    <button id="btn-slideshow-stop" class="btn-slideshow-stop">
+                        <span class="control-icon">■</span> 停止
+                    </button>
+                    
+                    <div class="select-wrapper">
+                        <label for="select-interval">表示時間：</label>
+                        <select id="select-interval">
+                            <option value="3">3秒</option>
+                            <option value="5">5秒</option>
+                            <option value="10">10秒</option>
+                        </select>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <label for="select-count">表示件数：</label>
+                        <select id="select-count">
+                            <option value="5">5件</option>
+                            <option value="10">10件</option>
+                            <option value="15" selected>15件</option>
+                            <option value="20">20件</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="config-message-box">
+                    <span class="badge-success">準備完了</span>
+                    <p class="config-msg-text">スライドショーは「ピン留め作品＋スライドショー対象（最新から）」の合計15件で構成されます。</p>
+                </div>
+            </div>
+
+            <!-- 3. 現在の表示情報 -->
+            <div class="dashboard-card current-display-card">
+                <div class="current-display-left">
+                    <h2>現在の表示情報</h2>
+                    <div class="display-status-row">
+                        <span class="display-status-label">スライドショー</span>
+                        <span id="badge-slideshow-status" class="badge-status-inactive">停止中</span>
+                    </div>
+                    <div id="display-info-detail" class="display-info-detail">
+                        <p class="info-empty-msg">手動表示またはスライドショー開始でここに表示されます</p>
+                    </div>
+                </div>
+                <div class="current-display-right">
+                    <!-- 現在表示中のドット絵プレビュー（5×5 / 16×16 / 32×16 に対応） -->
+                    <div id="led-preview-canvas" class="pixel-canvas-preview"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- メインエリア（作品一覧と右サイドバー） -->
+        <div class="main-layout-row">
+            
+            <!-- 左カラム：作品一覧 -->
+            <section class="list-section">
+                <div class="list-card-header">
+                    <h2>作品一覧（全<span id="txt-total-count">0</span>件）</h2>
+                </div>
+
+                <!-- フィルターと検索バー -->
+                <div class="list-toolbar">
+                    <div class="toolbar-filters">
+                        <button class="btn-filter active" data-filter="all">すべて</button>
+                        <button class="btn-filter" data-filter="pinned">⭐ ピン留めのみ</button>
+                        <button class="btn-filter" data-filter="showing">▶ スライドショー対象のみ</button>
+                        <button class="btn-filter" data-filter="hidden">☆ 対象外のみ</button>
+                    </div>
+                    <div class="toolbar-search">
+                        <input type="text" id="input-search" placeholder="ニックネームで検索...">
+                    </div>
+                </div>
+
+                <!-- 作品テーブル -->
+                <div class="table-wrapper">
+                    <table class="submissions-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">ID</th>
+                                <th style="width: 100px;">サムネイル</th>
+                                <th>ニックネーム</th>
+                                <th>投稿日時</th>
+                                <th style="width: 90px; text-align: center;">ピン留め</th>
+                                <th style="width: 140px; text-align: center;">スライドショー対象</th>
+                                <th style="width: 250px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissions-tbody">
+                            <!-- JSで動的に行を挿入 -->
+                        </tbody>
+                    </table>
+                    <div id="table-empty-msg" class="table-empty-msg hidden">
+                        投稿された作品が見つかりません。
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右カラム：サイドバーガイド -->
+            <aside class="sidebar-aside">
+                
+                <!-- スライドショールール -->
+                <div class="sidebar-card rules-card">
+                    <div class="sidebar-card-header">
+                        <span class="icon-badge">⚙️</span>
+                        <h3>スライドショーのルール</h3>
+                    </div>
+                    <div class="rule-step">
+                        <div class="rule-title-row">
+                            <span class="star-icon">⭐</span>
+                            <h4>ピン留め作品 (固定枠)</h4>
+                        </div>
+                        <p>ピン留めした作品は常にスライドショーに含まれます。（上位表示）</p>
+                    </div>
+                    <div class="rule-connector">+</div>
+                    <div class="rule-step">
+                        <div class="rule-title-row">
+                            <span class="play-icon">▶</span>
+                            <h4>スライドショー対象 (最新から)</h4>
+                        </div>
+                        <p>ピン留め枠を除いた残りを、スライドショー対象の作品から最新順に選びます。</p>
+                    </div>
+                    <div class="rule-connector">↓</div>
+                    <div class="rule-step order-result">
+                        <div class="rule-title-row">
+                            <span class="loop-icon">🔄</span>
+                            <h4>スライドショー順序</h4>
+                        </div>
+                        <p>「ピン留め作品」→「対象の最新作品」の順でループ再生します。</p>
+                    </div>
+                </div>
+
+                <!-- 使い方のポイント -->
+                <div class="sidebar-card points-card">
+                    <div class="sidebar-card-header">
+                        <span class="icon-badge">💡</span>
+                        <h3>使い方のポイント</h3>
+                    </div>
+                    <ul class="points-list">
+                        <li>✔️ 新しい作品は自動でスライドショー対象 ON になります</li>
+                        <li>✔️ 空欄や不適切な作品はスライドショー対象を OFF または削除</li>
+                        <li>✔️ 特に見てほしい作品は⭐ピン留め！</li>
+                    </ul>
+                    <div class="points-example-box">
+                        <p class="example-title">例：ピン留め3件の場合</p>
+                        <p class="example-desc">固定3件 ＋ 対象の最新12件 ＝ 合計15件を表示</p>
+                    </div>
+                </div>
+
+                <!-- スライドショーイメージのビジュアル図 -->
+                <div class="sidebar-card visual-flow-card">
+                    <h4>スライドショーのイメージ <span class="sub-text">（例：ピン留め2件の場合）</span></h4>
+                    <div class="flow-visual-container">
+                        <div class="visual-badge yellow">ピン留め</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="visual-badge yellow">ピン留め</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="visual-badge green">最新の対象作品</div>
+                        <span class="flow-arrow">→</span>
+                        <span class="dots-label">...</span>
+                    </div>
+                    <div class="loop-path-label">この順番で繰り返し再生されます</div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- プレビューモーダルダイアログ -->
+    <!-- ========================================== -->
+    <div id="modal-preview" class="modal-overlay hidden">
+        <div class="modal-content preview-modal-content">
+            <button id="btn-close-preview-modal" class="btn-close-modal">×</button>
+            <h3 id="txt-modal-preview-title">作品プレビュー (ID: --)</h3>
+            <div class="preview-modal-body">
+                <div class="preview-modal-canvas-wrapper">
+                    <!-- 拡大表示用キャンバス（5×5 / 16×16 / 32×16 に対応） -->
+                    <div id="modal-preview-canvas" class="pixel-canvas-large"></div>
+                </div>
+                <div class="preview-modal-info">
+                    <div class="info-group">
+                        <label>ニックネーム</label>
+                        <p id="txt-preview-nickname">--</p>
+                    </div>
+                    <div class="info-group">
+                        <label>投稿日時</label>
+                        <p id="txt-preview-time">--/--/-- --:--</p>
+                    </div>
+                    <div class="info-group">
+                        <label>サイズ</label>
+                        <p id="txt-preview-size">--×--ドット</p>
+                    </div>
+                    <button id="btn-preview-close" class="btn-modal-blue-close">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 削除確認モーダルダイアログ -->
+    <!-- ========================================== -->
+    <div id="modal-delete" class="modal-overlay hidden">
+        <div class="modal-content delete-modal-content">
+            <button id="btn-close-delete-modal" class="btn-close-modal">×</button>
+            <h3 id="txt-modal-delete-title">削除確認 (ID: --)</h3>
+            <div class="delete-modal-body">
+                <div class="delete-warning-banner">
+                    ⚠️ この作品を削除しますか？
+                </div>
+                <div class="delete-item-preview-row">
+                    <div id="modal-delete-thumbnail" class="pixel-canvas-thumbnail-large"></div>
+                    <div class="delete-item-info">
+                        <p><strong>ニックネーム：</strong> <span id="txt-delete-nickname">--</span></p>
+                        <p><strong>投稿日時：</strong> <span id="txt-delete-time">--/--/-- --:--</span></p>
+                    </div>
+                </div>
+                <p class="delete-danger-text">※削除した作品は元に戻せません。</p>
+                <div class="modal-buttons">
+                    <button id="btn-delete-cancel" class="btn-modal-secondary">キャンセル</button>
+                    <button id="btn-delete-confirm" class="btn-modal-danger-submit">削除する</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

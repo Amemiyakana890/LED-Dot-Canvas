@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEDドットキャンバス</title>
+    <!-- Google Fontsを追加してモダンで可愛らしいフォントにする -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- ========================================== -->
+        <!-- ① トップ画面 -->
+        <!-- ========================================== -->
+        <section id="screen-top" class="screen active">
+            <!-- 来場者用ページ フロー（全体の流れ） -->
+            <div class="flow-header">
+                <div class="flow-title-row">
+                    <span class="flow-palette-icon">🎨</span>
+                    <span class="flow-title">来場者用ページ フロー（全体の流れ）</span>
+                </div>
+                <div class="flow-steps">
+                    <span class="step-badge step-1 active">① トップ</span>
+                    <span class="arrow">→</span>
+                    <span class="step-badge step-2">② 作成画面</span>
+                    <span class="arrow">→</span>
+                    <span class="step-badge step-3">③ 送信確認</span>
+                    <span class="arrow">→</span>
+                    <span class="step-badge step-4">④ 完了</span>
+                    <span class="arrow">→</span>
+                    <span class="step-badge step-5">⑤ トップに戻る</span>
+                </div>
+            </div>
+
+            <!-- メインヒーロー -->
+            <header class="hero">
+                <div class="ribbon-wrapper">
+                    <div class="ribbon-content">みんなのドット絵がLEDアートになる！</div>
+                </div>
+
+                <h1>
+                    ドット絵を描いて<br>
+                    <span class="highlight-led">LED</span>に表示しよう！
+                </h1>
+
+                <div class="mascot-wrapper">
+                    <!-- ドット絵の猫キャラクター（インラインSVG） -->
+                    <svg class="mascot-cat-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                        <!-- 耳の外枠 -->
+                        <rect x="2" y="2" width="2" height="3" fill="#000000"/>
+                        <rect x="12" y="2" width="2" height="3" fill="#000000"/>
+                        <!-- 耳の中（茶色） -->
+                        <rect x="3" y="3" width="1" height="2" fill="#d35400"/>
+                        <rect x="12" y="3" width="1" height="2" fill="#d35400"/>
+                        <!-- 頭の上部 -->
+                        <rect x="4" y="4" width="8" height="1" fill="#000000"/>
+                        <!-- 顔の輪郭 -->
+                        <rect x="1" y="5" width="1" height="8" fill="#000000"/>
+                        <rect x="14" y="5" width="1" height="8" fill="#000000"/>
+                        <rect x="2" y="13" width="12" height="1" fill="#000000"/>
+                        <!-- 顔の中身（白） -->
+                        <rect x="2" y="5" width="12" height="8" fill="#ffffff"/>
+                        <rect x="4" y="4" width="8" height="1" fill="#ffffff"/>
+                        <!-- 目（黒） -->
+                        <rect x="4" y="8" width="2" height="2" fill="#000000"/>
+                        <rect x="10" y="8" width="2" height="2" fill="#000000"/>
+                        <!-- ほっぺ（ピンク） -->
+                        <rect x="2" y="10" width="2" height="1" fill="#ff7675"/>
+                        <rect x="12" y="10" width="2" height="1" fill="#ff7675"/>
+                        <!-- 口（黒） -->
+                        <rect x="7" y="10" width="2" height="1" fill="#000000"/>
+                        <rect x="6" y="11" width="1" height="1" fill="#000000"/>
+                        <rect x="9" y="11" width="1" height="1" fill="#000000"/>
+                    </svg>
+                    <span class="heart-deco deco-left">💖</span>
+                    <span class="heart-deco deco-right">💖</span>
+                </div>
+
+                <div class="intro-box">
+                    <p>世界に一つだけの作品を<br>みんなに見てもらおう！✨</p>
+                </div>
+            </header>
+
+            <!-- 3ステップ説明 -->
+            <section class="guide">
+                <div class="card card-step-1">
+                    <div class="card-icon">✏️</div>
+                    <div class="card-content">
+                        <h2>1. 好きな色をえらんで<br>ドットをぬろう</h2>
+                    </div>
+                </div>
+
+                <div class="card card-step-2">
+                    <div class="card-icon">😊</div>
+                    <div class="card-content">
+                        <h2>2. ニックネームを入力しよう<br>（空欄でもOK！）</h2>
+                    </div>
+                </div>
+
+                <div class="card card-step-3">
+                    <div class="card-icon">✈️</div>
+                    <div class="card-content">
+                        <h2>3. 投稿ボタンをおして<br>LEDに表示されるよ！</h2>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 開始ボタン -->
+            <section class="action-area">
+                <button id="btn-start" class="btn-primary">
+                    さっそく描いてみる！ ✏️
+                </button>
+            </section>
+            
+            <!-- ポイント・仕様情報 -->
+            <footer class="info-footer">
+                <div class="points-box">
+                    <div class="points-title-row">
+                        <span class="badge-point">ポイント</span>
+                        <svg class="footer-icon-palette" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="18" height="18" shape-rendering="crispEdges">
+                            <rect x="5" y="2" width="6" height="1" fill="#ff7675"/>
+                            <rect x="3" y="3" width="10" height="1" fill="#ffeaa7"/>
+                            <rect x="2" y="4" width="12" height="8" fill="#55efc4"/>
+                            <rect x="3" y="12" width="10" height="1" fill="#74b9ff"/>
+                            <rect x="5" y="13" width="6" height="1" fill="#a29bfe"/>
+                        </svg>
+                    </div>
+                    <ul>
+                        <li>🎨 パステルカラーでポップに、ドット柄で世界観を演出</li>
+                        <li>🐱 直感的に操作できるシンプルなUIで、初めての人でも安心！</li>
+                        <li>✈️ 3ステップでかんたん投稿！（描く→入力→送信）</li>
+                    </ul>
+                </div>
+                <div class="spec-box">
+                    <span class="spec-title">キャンバス仕様</span>
+                    <ul>
+                        <li>・サイズ：5×5、16×16、32×16から選択可能</li>
+                        <li>・保存データ：各ピクセルのRGB値（0〜255）</li>
+                        <li>・ニックネーム：任意（最大30文字）</li>
+                    </ul>
+                </div>
+            </footer>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ② ドット絵作成画面 -->
+        <!-- ========================================== -->
+        <section id="screen-draw" class="screen">
+            <header class="draw-header">
+                <button id="btn-back-to-top" class="btn-icon-back" title="トップに戻る">＜</button>
+                <h2>ドット絵をつくろう！</h2>
+                <button id="btn-clear-all" class="btn-clear">全消去 🗑️</button>
+            </header>
+
+            <!-- LEDマトリックスサイズ選択 -->
+            <section class="matrix-size-section">
+                <label for="matrix-size">LEDマトリックスサイズ</label>
+                <div class="matrix-size-buttons">
+                    <button class="matrix-size-btn active" data-width="5" data-height="5">5×5</button>
+                    <button class="matrix-size-btn" data-width="16" data-height="16">16×16</button>
+                    <button class="matrix-size-btn" data-width="32" data-height="16">32×16</button>
+                </div>
+            </section>
+
+            <!-- キャンバス -->
+            <section class="canvas-area">
+                <div id="pixel-canvas" class="pixel-canvas">
+                    <!-- JSでサイズに合わせてセルを生成 -->
+                </div>
+            </section>
+
+            <!-- 操作ツール -->
+            <section class="draw-tools">
+                <button id="btn-undo" class="btn-tool undo">
+                    <span class="tool-icon">↩️</span>
+                    <span class="tool-label">もどす</span>
+                </button>
+                <button id="btn-redo" class="btn-tool redo">
+                    <span class="tool-icon">🔁</span>
+                    <span class="tool-label">やり直す</span>
+                </button>
+                <button id="btn-eraser" class="btn-tool eraser">
+                    <span class="tool-icon">🧼</span>
+                    <span class="tool-label">消しゴム</span>
+                </button>
+            </section>
+
+            <!-- パレット -->
+            <section class="color-palette-section">
+                <span class="palette-title">カラーをえらぶ</span>
+                <div class="palette-colors">
+                    <button class="color-btn active" data-color="#ff4d7d" style="background-color: #ff4d7d;"></button>
+                    <button class="color-btn" data-color="#3498db" style="background-color: #3498db;"></button>
+                    <button class="color-btn" data-color="#f1c40f" style="background-color: #f1c40f;"></button>
+                    <button class="color-btn" data-color="#2d3436" style="background-color: #2d3436;"></button>
+                    <button class="color-btn" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                </div>
+            </section>
+
+            <!-- ニックネーム入力 -->
+            <section class="nickname-section">
+                <label for="input-nickname">ニックネーム（任意）</label>
+                <input type="text" id="input-nickname" placeholder="ここに入力してください（30文字以内）" maxlength="30">
+            </section>
+
+            <!-- 投稿ボタン -->
+            <section class="action-area">
+                <button id="btn-submit-trigger" class="btn-primary btn-submit">
+                    ✈️ 投稿する
+                </button>
+            </section>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- ③ 送信確認ダイアログ (モーバル) -->
+    <!-- ========================================== -->
+    <div id="dialog-confirm" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-icon-wrapper confirm">
+                <span class="modal-icon">?</span>
+            </div>
+            <h3>送信しますか？</h3>
+            <p>このドット絵を<br>LEDに表示します！<br>よろしいですか？</p>
+            <div class="modal-buttons">
+                <button id="btn-confirm-cancel" class="btn-modal-secondary">キャンセル</button>
+                <button id="btn-confirm-ok" class="btn-modal-primary">送信する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ④ 投稿完了ダイアログ (モーバル) -->
+    <!-- ========================================== -->
+    <div id="dialog-complete" class="modal-overlay hidden">
+        <!-- 完了画面の紙吹雪アニメーション用の背景要素 -->
+        <div class="confetti-bg"></div>
+        <div class="modal-content complete">
+            <div class="modal-icon-wrapper success">
+                <span class="modal-icon">✓</span>
+            </div>
+            <h3 class="success-text">送信しました！</h3>
+            <div class="mascot-wrapper-small">
+                <!-- 笑顔のドット絵猫（インラインSVG） -->
+                <svg class="mascot-cat-svg-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <!-- 耳の外枠 -->
+                    <rect x="2" y="2" width="2" height="3" fill="#000000"/>
+                    <rect x="12" y="2" width="2" height="3" fill="#000000"/>
+                    <!-- 耳の中（茶色） -->
+                    <rect x="3" y="3" width="1" height="2" fill="#d35400"/>
+                    <rect x="12" y="3" width="1" height="2" fill="#d35400"/>
+                    <!-- 頭の上部 -->
+                    <rect x="4" y="4" width="8" height="1" fill="#000000"/>
+                    <!-- 顔の輪郭 -->
+                    <rect x="1" y="5" width="1" height="8" fill="#000000"/>
+                    <rect x="14" y="5" width="1" height="8" fill="#000000"/>
+                    <rect x="2" y="13" width="12" height="1" fill="#000000"/>
+                    <!-- 顔の中身（白） -->
+                    <rect x="2" y="5" width="12" height="8" fill="#ffffff"/>
+                    <rect x="4" y="4" width="8" height="1" fill="#ffffff"/>
+                    <!-- 目（笑顔の細目） -->
+                    <rect x="3" y="8" width="3" height="1" fill="#000000"/>
+                    <rect x="10" y="8" width="3" height="1" fill="#000000"/>
+                    <rect x="4" y="7" width="1" height="1" fill="#000000"/>
+                    <rect x="11" y="7" width="1" height="1" fill="#000000"/>
+                    <!-- ほっぺ（ピンク） -->
+                    <rect x="2" y="10" width="2" height="1" fill="#ff7675"/>
+                    <rect x="12" y="10" width="2" height="1" fill="#ff7675"/>
+                    <!-- 口（開いた口） -->
+                    <rect x="6" y="10" width="1" height="2" fill="#000000"/>
+                    <rect x="9" y="10" width="1" height="2" fill="#000000"/>
+                    <rect x="7" y="10" width="2" height="1" fill="#000000"/>
+                    <rect x="7" y="11" width="2" height="1" fill="#ff7675"/>
+                    <rect x="7" y="12" width="2" height="1" fill="#000000"/>
+                </svg>
+            </div>
+            <p>あなたのドット絵が<br>LEDに表示されます✨<br>投稿してくれてありがとう！</p>
+            <div class="modal-buttons single">
+                <button id="btn-complete-ok" class="btn-modal-complete">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ⑤ エラーダイアログ -->
+    <!-- ========================================== -->
+    <div id="dialog-error" class="modal-overlay hidden">
+        <div class="modal-content error">
+            <div class="modal-icon-wrapper error">
+                <span class="modal-icon">⚠️</span>
+            </div>
+            <h3>エラーが発生しました</h3>
+            <p id="error-message">サーバーに接続できません。サーバーが起動していることを確認してください。</p>
+            <div class="modal-buttons single">
+                <button id="btn-error-ok" class="btn-modal-error">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

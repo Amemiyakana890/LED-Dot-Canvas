@@ -1,0 +1,856 @@
+/* ========================================== */
+/* LEDドットキャンバス - パステルポップ・デザインシステム */
+/* ========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'M PLUS Rounded 1c', "Yu Gothic", sans-serif;
+    /* パステルピンクベースのドット柄背景（画像の世界観を再現） */
+    background-color: #FFF9F6;
+    background-image: radial-gradient(#FFEBE5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
+    min-height: 100vh;
+    color: #4A4A4A;
+}
+
+.container {
+    width: 100%;
+    max-width: 430px; /* スマホモックサイズ */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ボタン共通のタップアニメーション */
+button, .btn-primary, .btn-tool {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* ========================================== */
+/* フローヘッダー (上部全体の流れ) */
+/* ========================================== */
+.flow-header {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(255, 107, 129, 0.06);
+    border: 2px solid #FFEBE5;
+}
+
+.flow-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.flow-palette-icon {
+    font-size: 16px;
+}
+
+.flow-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #5C5C5C;
+    letter-spacing: 0.5px;
+}
+
+.flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: #A3A3A3;
+}
+
+.flow-steps .arrow {
+    color: #DDD;
+    font-weight: bold;
+}
+
+.step-badge {
+    padding: 5px 9px;
+    border-radius: 14px;
+    background: #F8F9FA;
+    color: #8E8E8E;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.step-badge.step-1.active { background: #FFEBEF; color: #FF6B81; transform: scale(1.05); }
+.step-badge.step-2.active { background: #EAF9EE; color: #2ECC71; transform: scale(1.05); }
+.step-badge.step-3.active { background: #FEF8DD; color: #F39C12; transform: scale(1.05); }
+.step-badge.step-4.active { background: #F6EBFA; color: #9C27B0; transform: scale(1.05); }
+.step-badge.step-5.active { background: #EBF5FF; color: #2196F3; transform: scale(1.05); }
+
+/* ========================================== */
+/* ① トップ画面 */
+/* ========================================== */
+
+.hero {
+    background: white;
+    border-radius: 24px;
+    padding: 35px 20px 25px 20px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(255, 107, 129, 0.05);
+    border: 2px solid #FFEBE5;
+    position: relative;
+    overflow: hidden;
+}
+
+/* リボン風ヘッダー */
+.ribbon-wrapper {
+    position: relative;
+    display: inline-block;
+    background: #FF6B81;
+    color: white;
+    padding: 6px 18px;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 6px rgba(255, 107, 129, 0.2);
+}
+
+.ribbon-wrapper::before, .ribbon-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.ribbon-wrapper::before {
+    left: -8px;
+    border-width: 14px 8px 14px 0;
+    border-color: #FF6B81 transparent #FF6B81 transparent;
+}
+
+.ribbon-wrapper::after {
+    right: -8px;
+    border-width: 14px 0 14px 8px;
+    border-color: #FF6B81 transparent #FF6B81 transparent;
+}
+
+.hero h1 {
+    font-size: 26px;
+    color: #4A4A4A;
+    line-height: 1.4;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.highlight-led {
+    color: #FF6B81;
+    font-size: 32px;
+    font-weight: 900;
+    position: relative;
+    display: inline-block;
+}
+
+/* マスコットキャラクターの配置 */
+.mascot-wrapper {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mascot-cat-svg {
+    width: 120px;
+    height: 120px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
+    animation: floatCat 4s ease-in-out infinite;
+}
+
+@keyframes floatCat {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-8px) scale(1.02); }
+    100% { transform: translateY(0px) scale(1); }
+}
+
+/* 装飾のハート */
+.heart-deco {
+    position: absolute;
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    animation: floatDeco 3.5s ease-in-out infinite;
+}
+
+.deco-left {
+    left: -5px;
+    top: 55px;
+    animation-delay: 0s;
+}
+
+.deco-right {
+    right: -5px;
+    top: 45px;
+    animation-delay: 1.7s;
+}
+
+@keyframes floatDeco {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(8deg) scale(1.1); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.intro-box {
+    background: #FFFDF0;
+    border: 2px solid #FFEAA7;
+    border-radius: 16px;
+    padding: 12px 15px;
+    display: inline-block;
+    width: 100%;
+}
+
+.intro-box p {
+    color: #7F6B1B;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* 3ステップガイド説明 */
+.guide {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 15px 18px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(255, 107, 129, 0.03);
+    border: 2px solid #FFEBE5;
+}
+
+.card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
+}
+
+.card-step-1 .card-icon { background: #FFEBEF; }
+.card-step-2 .card-icon { background: #EBF5FF; }
+.card-step-3 .card-icon { background: #EAF9EE; }
+
+.card-content h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4A4A4A;
+    line-height: 1.4;
+    text-align: left;
+}
+
+/* アクションボタン領域 */
+.action-area {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-primary {
+    width: 100%;
+    background: #69D36F; /* 画像の鮮やかな黄緑 */
+    background: linear-gradient(135deg, #78D166, #5CC25E);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(105, 211, 111, 0.35), inset 0 -4px 0 rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #81D96F, #63CE66);
+    box-shadow: 0 8px 20px rgba(105, 211, 111, 0.45), inset 0 -4px 0 rgba(0,0,0,0.1);
+}
+
+/* 下部仕様情報フッター */
+.info-footer {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.points-box {
+    background: #EBF6FF;
+    border: 2px solid #BADCFF;
+    border-radius: 18px;
+    padding: 15px 18px;
+}
+
+.points-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.badge-point {
+    background: #3498DB;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 10px;
+}
+
+.points-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.points-box li {
+    font-size: 12px;
+    color: #2C3E50;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.spec-box {
+    background: #FFF0F2;
+    border: 2px dashed #FFB6C1;
+    border-radius: 18px;
+    padding: 15px 18px;
+}
+
+.spec-title {
+    display: inline-block;
+    color: #D35400;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.spec-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.spec-box li {
+    font-size: 12px;
+    color: #6C5B7B;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+/* ========================================== */
+/* ② ドット絵作成画面 */
+/* ========================================== */
+
+.draw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 18px;
+    padding: 10px 15px;
+    border: 2px solid #FFEBE5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.btn-icon-back {
+    background: #F1F2F6;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #555;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+}
+
+.draw-header h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #4A4A4A;
+}
+
+.btn-clear {
+    background: #FFF0F2;
+    border: 2px solid #FFC0CB;
+    color: #D63031;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: inset 0 -2px 0 rgba(214, 48, 49, 0.1);
+}
+
+/* キャンバスエリア */
+.canvas-area {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.pixel-canvas {
+    width: 320px;
+    max-width: 100%;
+    max-height: 320px;
+    aspect-ratio: var(--canvas-cols, 16) / var(--canvas-rows, 16);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(255, 107, 129, 0.08);
+    border: 4px solid #FFF1EC;
+    display: grid;
+    grid-template-columns: repeat(var(--canvas-cols, 16), 1fr);
+    grid-template-rows: repeat(var(--canvas-rows, 16), 1fr);
+    gap: 1px;
+    background-color: #E2E8F0; /* グリッド境界線 */
+    padding: 1px;
+    overflow: hidden;
+}
+
+.pixel-cell {
+    background-color: #ffffff;
+    cursor: pointer;
+    aspect-ratio: 1;
+    transition: background-color 0.05s ease;
+}
+
+.pixel-cell:hover {
+    filter: brightness(0.95);
+}
+
+/* 操作ツール */
+.draw-tools {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-tool {
+    flex: 1;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+/* もどす・やり直す（薄い黄色背景） */
+.btn-tool.undo, .btn-tool.redo {
+    background: #FFF5D1;
+    border: 2px solid #FFEAA7;
+    color: #7F6B1B;
+}
+
+/* 消しゴム（薄い青/緑背景） */
+.btn-tool.eraser {
+    background: #E3F2FD;
+    border: 2px solid #BADCFF;
+    color: #2980B9;
+}
+
+.btn-tool.active {
+    filter: brightness(0.9);
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.12);
+    transform: translateY(2px);
+}
+
+.tool-icon {
+    font-size: 20px;
+}
+
+.tool-label {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* パレット */
+.matrix-size-section {
+    background: #F0E6FF;
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 2px solid #D4A5FF;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.matrix-size-section label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #5A4B7A;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.matrix-size-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+}
+
+.matrix-size-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid #D4A5FF;
+    background: white;
+    color: #5A4B7A;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.matrix-size-btn:hover {
+    background: #F5ECFF;
+}
+
+.matrix-size-btn.active {
+    background: #B89FFF;
+    color: white;
+    box-shadow: 0 4px 8px rgba(184, 159, 255, 0.3);
+}
+
+.color-palette-section {
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 2px solid #FFEBE5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.palette-title {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #888;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.palette-colors {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.color-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+/* 白ボタンのみグレーの外枠 */
+.color-btn[data-color="#ffffff"] {
+    border-color: #E2E8F0;
+}
+
+/* 選択中のボタンにチェックマークを描画 */
+.color-btn.active::after {
+    content: '✓';
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.color-btn[data-color="#ffffff"].active::after {
+    color: #333;
+}
+
+/* ニックネームセクション */
+.nickname-section {
+    background: #EAF9EE; /* 薄緑 */
+    border: 2px solid #A3E4D7;
+    border-radius: 18px;
+    padding: 12px 15px;
+    margin-bottom: 25px;
+}
+
+.nickname-section label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #117864;
+    margin-bottom: 6px;
+}
+
+.nickname-section input {
+    width: 100%;
+    background: white;
+    border: 1px solid #C2F0D8;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.nickname-section input::placeholder {
+    color: #A3C9B8;
+}
+
+.nickname-section input:focus {
+    border-color: #1ABC9C;
+}
+
+.btn-submit {
+    margin-top: 0;
+}
+
+/* ========================================== */
+/* ③・④ モーダルダイアログ */
+/* ========================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 28px;
+    padding: 30px 24px;
+    width: 85%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    border: 3px solid #FFEBE5;
+    position: relative;
+    z-index: 10;
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-icon-wrapper {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    font-size: 26px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.06);
+}
+
+/* 送信確認アイコン (黄) */
+.modal-icon-wrapper.confirm {
+    background: #FFF5D1;
+    border: 2px solid #FFEAA7;
+    color: #F39C12;
+}
+
+/* 投稿完了アイコン (緑) */
+.modal-icon-wrapper.success {
+    background: #EAF9EE;
+    border: 2px solid #A3E4D7;
+    color: #2ECC71;
+}
+
+/* エラーアイコン (赤) */
+.modal-icon-wrapper.error {
+    background: #FFE8E8;
+    border: 2px solid #FF9999;
+    color: #FF6B7A;
+}
+
+.modal-content h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #4A4A4A;
+    margin-bottom: 12px;
+}
+
+.modal-content .success-text {
+    color: #FF6B81; /* 画像の「送信しました！」のピンク文字 */
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.modal-content p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-modal-secondary {
+    flex: 1;
+    background: #F1F2F6;
+    border: none;
+    padding: 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #555;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.08);
+}
+
+.btn-modal-primary {
+    flex: 1;
+    background: #84D656;
+    border: none;
+    padding: 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 4px 10px rgba(132, 214, 86, 0.3), inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+.btn-modal-complete {
+    width: 100%;
+    background: #FF6B81;
+    border: none;
+    padding: 14px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3), inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+.btn-modal-error {
+    width: 100%;
+    background: #FF9999;
+    border: none;
+    padding: 14px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 153, 153, 0.3), inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+/* 完了画面の小さな猫マスコット */
+.mascot-wrapper-small {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 15px auto;
+}
+
+.mascot-cat-svg-small {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.05));
+    animation: bounceCat 0.6s infinite alternate;
+}
+
+@keyframes bounceCat {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+
+/* 完了画面の紙吹雪背景アニメーション */
+.confetti-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 20%, white 20%, white 40%, transparent 40%, transparent 60%, white 60%, white 80%, transparent 80%, transparent);
+    background-size: 24px 24px;
+    opacity: 0.05;
+    animation: confettiSpin 12s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes confettiSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================== */
+/* SPA画面切り替え & モーダルダイアログ */
+/* ========================================== */
+
+.screen {
+    display: none;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
