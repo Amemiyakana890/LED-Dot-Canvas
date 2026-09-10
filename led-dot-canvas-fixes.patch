@@ -1,0 +1,101 @@
+diff --git a/admin.css b/public/admin.css
+similarity index 100%
+rename from admin.css
+rename to public/admin.css
+diff --git a/admin.html b/public/admin.html
+similarity index 100%
+rename from admin.html
+rename to public/admin.html
+diff --git a/admin.js b/public/admin.js
+similarity index 98%
+rename from admin.js
+rename to public/admin.js
+index 6795b08..db0589b 100644
+--- a/admin.js
++++ b/public/admin.js
+@@ -1,5 +1,7 @@
+ // server.js が動いているURL（ポートはserver.jsのPORTと合わせる）
+-const API_BASE = "http://localhost:3000";
++// 同じホスト名のポート3000にアクセスすることで、PCからでも
++// スマホ・タブレット（同一LAN経由）からでも正しく繋がる
++const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
+ 
+ document.addEventListener('DOMContentLoaded', () => {
+     // --- 状態変数 ---
+@@ -597,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
+         btnTestConnection.textContent = 'テスト中...';
+ 
+         try {
+-            const res = await fetch(`${API_BASE}/`);
++            const res = await fetch(`${API_BASE}/api`);
+             if (!res.ok) throw new Error(`HTTP ${res.status}`);
+             console.log('[接続テスター] サーバーへの通信に成功しました。');
+             alert(`接続テストに成功しました！\nサーバー(${API_BASE})との通信は正常です。\n※ESP32実機との通信は別途確認してください。`);
+diff --git a/app.js b/public/app.js
+similarity index 97%
+rename from app.js
+rename to public/app.js
+index 6593ed8..0b3c793 100644
+--- a/app.js
++++ b/public/app.js
+@@ -1,3 +1,7 @@
++// サーバーのURL（同じホストのポート3000にアクセスする。
++// これによりPCからでもスマホ（同一LAN経由）からでも正しく繋がる）
++const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
++
+ document.addEventListener('DOMContentLoaded', () => {
+     // 画面要素
+     const screenTop = document.getElementById('screen-top');
+@@ -61,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
+     // サーバー/データベースヘルスチェック
+     async function checkServerHealth() {
+         try {
+-            const res = await fetch("http://localhost:3000/health");
++            const res = await fetch(`${API_BASE}/health`);
+             const data = await res.json();
+             
+             if (res.status === 200 && data.status === "ok") {
+@@ -404,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
+         height: canvasHeight
+     };
+ 
+-    fetch("http://localhost:3000/submissions",{
++    fetch(`${API_BASE}/submissions`,{
+         method:"POST",
+         headers:{
+             "Content-Type":"application/json"
+diff --git a/index.html b/public/index.html
+similarity index 100%
+rename from index.html
+rename to public/index.html
+diff --git a/style.css b/public/style.css
+similarity index 100%
+rename from style.css
+rename to public/style.css
+diff --git a/server.js b/server.js
+index 7530040..50e7712 100644
+--- a/server.js
++++ b/server.js
+@@ -10,6 +10,11 @@ const DB_PATH = path.join(__dirname, "database.db");
+ app.use(cors());
+ app.use(express.json({ limit: "2mb" }));
+ 
++// フロントエンド（来場者用ページ・管理画面）を配信
++// http://<サーバーのIP>:3000/        -> public/index.html（来場者用）
++// http://<サーバーのIP>:3000/admin.html -> 管理画面
++app.use(express.static(path.join(__dirname, "public")));
++
+ let activeDisplay = null;
+ let lastEspPollAt = null;
+ let lastEspIp = null;
+@@ -182,7 +187,9 @@ function checkDatabase() {
+ 
+ initDatabase();
+ 
+-app.get("/", (req, res) => {
++// 注意: "/" は上の express.static により public/index.html が返される。
++// サーバーのJSON情報が見たい場合は /api にアクセスする。
++app.get("/api", (req, res) => {
+     res.json({
+         name: "LED Dot Canvas Server",
+         ok: true,

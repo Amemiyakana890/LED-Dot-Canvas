@@ -6,9 +6,29 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 const DB_PATH = path.join(__dirname, "database.db");
+const PUBLIC_FILES = [
+    "index.html",
+    "admin.html",
+    "app.js",
+    "admin.js",
+    "style.css",
+    "admin.css"
+];
 
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
+
+// 来場者ページと管理画面を同じホスト・ポートから配信する。
+// これによりスマホから開いても、画面とAPIの接続先が一致する。
+app.get(["/", "/index.html"], (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
+PUBLIC_FILES.slice(1).forEach((fileName) => {
+    app.get(`/${fileName}`, (req, res) => {
+        res.sendFile(path.join(__dirname, fileName));
+    });
+});
 
 let activeDisplay = null;
 let lastEspPollAt = null;
@@ -357,5 +377,5 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

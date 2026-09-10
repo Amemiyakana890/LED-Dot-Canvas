@@ -1,3 +1,7 @@
+// サーバーのURL（同じホストのポート3000にアクセスする。
+// これによりPCからでもスマホ（同一LAN経由）からでも正しく繋がる）
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
+
 document.addEventListener('DOMContentLoaded', () => {
     // 画面要素
     const screenTop = document.getElementById('screen-top');
@@ -61,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // サーバー/データベースヘルスチェック
     async function checkServerHealth() {
         try {
-            const res = await fetch("http://localhost:3000/health");
+            const res = await fetch(`${API_BASE}/health`);
             const data = await res.json();
             
             if (res.status === 200 && data.status === "ok") {
@@ -404,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         height: canvasHeight
     };
 
-    fetch("http://localhost:3000/submissions",{
+    fetch(`${API_BASE}/submissions`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"

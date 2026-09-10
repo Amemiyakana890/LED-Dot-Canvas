@@ -1,5 +1,7 @@
 // server.js が動いているURL（ポートはserver.jsのPORTと合わせる）
-const API_BASE = "http://localhost:3000";
+// 同じホスト名のポート3000にアクセスすることで、PCからでも
+// スマホ・タブレット（同一LAN経由）からでも正しく繋がる
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 状態変数 ---
