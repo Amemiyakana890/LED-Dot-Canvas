@@ -472,20 +472,32 @@ document.addEventListener('DOMContentLoaded', () => {
         drawPixelGrid(ledPreviewCanvas, sub.pixels, sub.width, sub.height);
 
         // 詳細テキストの更新
-        displayInfoDetail.innerHTML = `
-            <p><strong>ID:</strong> <span class="highlight">${sub.id}</span></p>
-            <p><strong>ニックネーム:</strong> <span class="highlight">${sub.nickname}</span></p>
-            <p><strong>表示方式:</strong> <span class="highlight">${isFromSlideshow ? '自動（スライドショー）' : '手動選択'}</span></p>
-        `;
+        displayInfoDetail.replaceChildren();
+        [
+            ['ID:', sub.id],
+            ['ニックネーム:', sub.nickname],
+            ['表示方式:', isFromSlideshow ? '自動（スライドショー）' : '手動選択']
+        ].forEach(([label, value]) => {
+            const paragraph = document.createElement('p');
+            const labelElement = document.createElement('strong');
+            const valueElement = document.createElement('span');
+
+            labelElement.textContent = label;
+            valueElement.className = 'highlight';
+            valueElement.textContent = String(value);
+            paragraph.append(labelElement, ' ', valueElement);
+            displayInfoDetail.appendChild(paragraph);
+        });
 
         try {
             const data = await sendToLed(sub);
             console.log(`[LED] ID:${sub.id}をESP32用表示データに設定しました。`, data.display);
         } catch (e) {
             console.error('[LED] 表示データの送信に失敗しました:', e);
-            displayInfoDetail.innerHTML += `
-                <p style="color:#ef4444;"><strong>LED送信:</strong> サーバーへの表示指示に失敗しました。</p>
-            `;
+            const errorParagraph = document.createElement('p');
+            errorParagraph.style.color = '#ef4444';
+            errorParagraph.textContent = 'LED送信: サーバーへの表示指示に失敗しました。';
+            displayInfoDetail.appendChild(errorParagraph);
         }
     }
 
